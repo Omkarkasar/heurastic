@@ -110,7 +110,6 @@
                         <th>Student ID</th>
                         <th>Course ID</th>
                         <th>Enrollment Date</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -164,10 +163,6 @@
                                     <td>${enrollment.studentid}</td>
                                     <td>${enrollment.courseid}</td>
                                     <td>${enrollment.enrollmentdate}</td>
-                                    <td>
-                                        <button class="btn btn-success editBtn" data-id="${enrollment.id}">Edit</button>
-                                        <button class="btn btn-danger deleteBtn" data-id="${enrollment.id}">Delete</button>
-                                    </td>
                                 </tr>`;
                         });
                         $('#datatable tbody').html(tbody);
@@ -175,7 +170,6 @@
                 });
             }
             fetchenrollments();
-            //Edit/Update
              });
     </script>
 

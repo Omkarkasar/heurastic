@@ -11,7 +11,7 @@ class TaskController extends Controller
     {
         
         $task = new task();
-        $task->name = $request->taskname;
+        $task->taskname = $request->taskname;
         $task->studentid = $request->studentid;
         $task->teacherid = $request->teacherid;
         $task->tasktitle = $request->tasktitle;
