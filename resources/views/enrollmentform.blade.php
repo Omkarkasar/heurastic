@@ -8,7 +8,7 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -27,7 +27,8 @@
             margin-top: 40px;
         }
 
-        .table th, .table td {
+        .table th,
+        .table td {
             vertical-align: middle;
             text-align: center;
         }
@@ -37,7 +38,8 @@
             color: white;
         }
 
-        .btn-primary, .btn-danger {
+        .btn-primary,
+        .btn-danger {
             min-width: 80px;
         }
     </style>
@@ -51,46 +53,47 @@
         <!-- Buttons -->
         <div class="d-flex justify-content-between mb-3">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Add Student
+                Add enrollment
             </button>
             <a href="{{ url('/') }}" class="btn btn-secondary">Back</a>
         </div>
 
-        <!-- Student Modal -->
+        <!-- enrollment Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Enter Student Details</h5>
+                        <h5 class="modal-title">Enter enrollment Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="SubmitForm" action="{{route('studentstore')}}" method="POST">
-                            @csrf
-                            <input type="hidden" id="id" name="id">
+                        <form id="SubmitForm" action="{{route('enrollmentstore')}}" method="POST">
+                        @csrf   
+                        <input type="hidden" id="enrollment_id">
                             <div class="mb-3">
-                                <label class="form-label">Student Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <label class="form-label">Student:</label>
+                                <input type="hidden" name="id" id="id">
+                                <select class="form-control" id="studentid" name="studentid">
+                                    @foreach ($students as $student)
+                                        <option value="{{ $student->id }}">{{ $student->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <label class="form-label">Course:</label>
+                                <select class="form-control" id="courseid" name="courseid">
+                                    @foreach ($courses as $course)
+                                        <option value="{{ $course->id }}">{{ $course->coursename }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dob" name="dob" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="address" required>
+                                <label class="form-label">Enrollment Date:</label>
+                                <input type="date" class="form-control" id="enrollmentdate" name="enrollmentdate">
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="submit" class="btn btn-primary">Save Enrollment</button>
                             </div>
                         </form>
                     </div>
@@ -98,17 +101,15 @@
             </div>
         </div>
 
-        <!-- Student Table -->
+        <!-- enrollment Table -->
         <div class="table-responsive">
             <table class="table table-bordered table-hover bg-white" id="datatable">
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Date Of Birth</th>
-                        <th>Phone</th>
-                        <th>Address</th>
+                        <th>Student ID</th>
+                        <th>Course ID</th>
+                        <th>Enrollment Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -121,16 +122,17 @@
 
     <script>
         $(document).ready(function () {
+            fetchenrollments();
             $.ajaxSetup({
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
 
-            // Submit Form (Add or Update Student)
+            // Submit Form (Add or Update enrollment)
             $('#SubmitForm').on('submit', function (e) {
                 e.preventDefault();
                 var id = $('#id').val();
                 var formData = new FormData(this);
-                var url = id ? `studentupdate/${id}` : "{{ route('studentstore') }}";
+                var url = id ? `enrollmentupdate/${id}` : "{{ route('enrollmentstore') }}";
 
                 $.ajax({
                     url: url,
@@ -142,33 +144,29 @@
                         $('#SubmitForm')[0].reset();
                         $('#exampleModal').modal('hide');
                         alert(response.success);
-                        fetchStudents();
+                        fetchenrollments();
                     },
                     error: function (e) {
                         console.log(e);
                     }
                 });
             });
-
-            // Fetch Student Records
-            function fetchStudents() {
+            function fetchenrollments() {
                 $.ajax({
-                    url: `studentget`,
+                    url: `enrollmentget`,
                     type: "GET",
                     success: function (response) {
                         var tbody = '';
-                        $.each(response, function (i, student) {
+                        $.each(response, function (i, enrollment) {
                             tbody += `
                                 <tr>
-                                    <td>${student.id}</td>
-                                    <td>${student.name}</td>
-                                    <td>${student.email}</td>
-                                    <td>${student.dob}</td>
-                                    <td>${student.phone}</td>
-                                    <td>${student.address}</td>
+                                    <td>${enrollment.id}</td>
+                                    <td>${enrollment.studentid}</td>
+                                    <td>${enrollment.courseid}</td>
+                                    <td>${enrollment.enrollmentdate}</td>
                                     <td>
-                                        <button class="btn btn-success editBtn" data-id="${student.id}">Edit</button>
-                                        <button class="btn btn-danger deleteBtn" data-id="${student.id}">Delete</button>
+                                        <button class="btn btn-success editBtn" data-id="${enrollment.id}">Edit</button>
+                                        <button class="btn btn-danger deleteBtn" data-id="${enrollment.id}">Delete</button>
                                     </td>
                                 </tr>`;
                         });
@@ -176,42 +174,9 @@
                     }
                 });
             }
-            fetchStudents();
-
-            // Edit Student
-            $(document).on('click', '.editBtn', function () {
-                var id = $(this).data('id');
-                $.ajax({
-                    url: `studentedit/${id}`,
-                    type: "GET",
-                    success: function (response) {
-                        $('#id').val(response.id);
-                        $('#name').val(response.name);
-                        $('#email').val(response.email);
-                        $('#dob').val(response.dob);
-                        $('#phone').val(response.phone);
-                        $('#address').val(response.address);
-                        $('#exampleModal').modal('show');
-                    }
-                });
-            });
-
-            // Delete Student
-            $(document).on('click', '.deleteBtn', function () {
-                var id = $(this).data('id');
-                if (confirm('Are you sure you want to delete this student?')) {
-                    $.ajax({
-                        url: `studentdelete/${id}`,
-                        type: "DELETE",
-                        data: { "_token": "{{csrf_token()}}" },
-                        success: function (response) {
-                            alert(response.success);
-                            fetchStudents();
-                        }
-                    });
-                }
-            });
-        });
+            fetchenrollments();
+            //Edit/Update
+             });
     </script>
 
 </body>

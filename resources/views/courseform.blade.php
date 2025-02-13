@@ -8,7 +8,7 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -27,7 +27,8 @@
             margin-top: 40px;
         }
 
-        .table th, .table td {
+        .table th,
+        .table td {
             vertical-align: middle;
             text-align: center;
         }
@@ -37,7 +38,8 @@
             color: white;
         }
 
-        .btn-primary, .btn-danger {
+        .btn-primary,
+        .btn-danger {
             min-width: 80px;
         }
     </style>
@@ -51,43 +53,36 @@
         <!-- Buttons -->
         <div class="d-flex justify-content-between mb-3">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Add Student
+                Add course
             </button>
             <a href="{{ url('/') }}" class="btn btn-secondary">Back</a>
         </div>
 
-        <!-- Student Modal -->
+        <!-- course Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Enter Student Details</h5>
+                        <h5 class="modal-title">Enter course Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="SubmitForm" action="{{route('studentstore')}}" method="POST">
+                        <form id="SubmitForm" action="{{route('coursestore')}}" method="POST">
                             @csrf
                             <input type="hidden" id="id" name="id">
                             <div class="mb-3">
-                                <label class="form-label">Student Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <label class="form-label">course Name</label>
+                                <input type="text" class="form-control" id="coursename" name="coursename" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <label class="form-label">course Description</label>
+                                <input type="text" class="form-control" id="description" name="description" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dob" name="dob" required>
+                                <label class="form-label">Course Duration(in Week)</label>
+                                <input type="number" class="form-control" id="duration" name="duration" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="address" required>
-                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -98,17 +93,15 @@
             </div>
         </div>
 
-        <!-- Student Table -->
+        <!-- course Table -->
         <div class="table-responsive">
             <table class="table table-bordered table-hover bg-white" id="datatable">
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Date Of Birth</th>
-                        <th>Phone</th>
-                        <th>Address</th>
+                        <th>Course Name</th>
+                        <th>Description</th>
+                        <th>Duration</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -125,12 +118,12 @@
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
 
-            // Submit Form (Add or Update Student)
+            // Submit Form (Add or Update course)
             $('#SubmitForm').on('submit', function (e) {
                 e.preventDefault();
                 var id = $('#id').val();
                 var formData = new FormData(this);
-                var url = id ? `studentupdate/${id}` : "{{ route('studentstore') }}";
+                var url = id ? `courseupdate/${id}` : "{{ route('coursestore') }}";
 
                 $.ajax({
                     url: url,
@@ -142,33 +135,30 @@
                         $('#SubmitForm')[0].reset();
                         $('#exampleModal').modal('hide');
                         alert(response.success);
-                        fetchStudents();
+                        fetchcourses();
                     },
                     error: function (e) {
                         console.log(e);
                     }
                 });
             });
-
-            // Fetch Student Records
-            function fetchStudents() {
+            // Fetch course Records
+            function fetchcourses() {
                 $.ajax({
-                    url: `studentget`,
+                    url: `courseget`,
                     type: "GET",
                     success: function (response) {
                         var tbody = '';
-                        $.each(response, function (i, student) {
+                        $.each(response, function (i, course) {
                             tbody += `
                                 <tr>
-                                    <td>${student.id}</td>
-                                    <td>${student.name}</td>
-                                    <td>${student.email}</td>
-                                    <td>${student.dob}</td>
-                                    <td>${student.phone}</td>
-                                    <td>${student.address}</td>
+                                    <td>${course.id}</td>
+                                    <td>${course.coursename}</td>
+                                    <td>${course.description}</td>
+                                    <td>${course.duration}</td>
                                     <td>
-                                        <button class="btn btn-success editBtn" data-id="${student.id}">Edit</button>
-                                        <button class="btn btn-danger deleteBtn" data-id="${student.id}">Delete</button>
+                                        <button class="btn btn-success editBtn" data-id="${course.id}">Edit</button>
+                                        <button class="btn btn-danger deleteBtn" data-id="${course.id}">Delete</button>
                                     </td>
                                 </tr>`;
                         });
@@ -176,41 +166,38 @@
                     }
                 });
             }
-            fetchStudents();
-
-            // Edit Student
+            fetchcourses();
+            // Edit course
             $(document).on('click', '.editBtn', function () {
                 var id = $(this).data('id');
                 $.ajax({
-                    url: `studentedit/${id}`,
+                    url: `courseedit/${id}`,
                     type: "GET",
                     success: function (response) {
                         $('#id').val(response.id);
-                        $('#name').val(response.name);
-                        $('#email').val(response.email);
-                        $('#dob').val(response.dob);
-                        $('#phone').val(response.phone);
-                        $('#address').val(response.address);
+                        $('#coursename').val(response.coursename);
+                        $('#description').val(response.description);
+                        $('#duration').val(response.duration);
                         $('#exampleModal').modal('show');
                     }
                 });
             });
-
-            // Delete Student
-            $(document).on('click', '.deleteBtn', function () {
+              // Delete course
+              $(document).on('click', '.deleteBtn', function () {
                 var id = $(this).data('id');
-                if (confirm('Are you sure you want to delete this student?')) {
+                if (confirm('Are you sure you want to delete this course?')) {
                     $.ajax({
-                        url: `studentdelete/${id}`,
+                        url: `coursedelete/${id}`,
                         type: "DELETE",
                         data: { "_token": "{{csrf_token()}}" },
                         success: function (response) {
                             alert(response.success);
-                            fetchStudents();
+                            fetchcourses();
                         }
                     });
                 }
             });
+
         });
     </script>
 

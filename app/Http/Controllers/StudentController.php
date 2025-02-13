@@ -10,13 +10,13 @@ class StudentController extends Controller
     public function studentstore(Request $request)
     {
 
-        // $validateData = $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'email' => 'required|email|unique:students,email',
-        //     'dob' => 'required|date',
-        //     'phone' => 'required|unique:students,phone|digits:10',
-        //     'address' => 'required|max:150',
-        // ]);
+        $validateData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email',
+            'dob' => 'required|date',
+            'phone' => 'required',
+            'address' => 'required|max:150',
+        ]);
         
 
         $student = new Student();
@@ -44,6 +44,14 @@ class StudentController extends Controller
     }
     public function studentupdate($id,Request $request)
     {
+        $validateData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email',
+            'dob' => 'required|date',
+            'phone' => 'required',
+            'address' => 'required|max:150',
+        ]);
+        
         $data=Student::findOrFail($id);
         $data->name=$request->name;
         $data->email=$request->email;

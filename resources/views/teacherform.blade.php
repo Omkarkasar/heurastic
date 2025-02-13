@@ -8,7 +8,7 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
@@ -27,7 +27,8 @@
             margin-top: 40px;
         }
 
-        .table th, .table td {
+        .table th,
+        .table td {
             vertical-align: middle;
             text-align: center;
         }
@@ -37,7 +38,8 @@
             color: white;
         }
 
-        .btn-primary, .btn-danger {
+        .btn-primary,
+        .btn-danger {
             min-width: 80px;
         }
     </style>
@@ -51,43 +53,32 @@
         <!-- Buttons -->
         <div class="d-flex justify-content-between mb-3">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Add Student
+                Add teacher
             </button>
             <a href="{{ url('/') }}" class="btn btn-secondary">Back</a>
         </div>
 
-        <!-- Student Modal -->
+        <!-- teacher Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Enter Student Details</h5>
+                        <h5 class="modal-title">Enter Teacher Details</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="SubmitForm" action="{{route('studentstore')}}" method="POST">
+                        <form id="SubmitForm" action="{{route('teacherstore')}}" method="POST">
                             @csrf
                             <input type="hidden" id="id" name="id">
                             <div class="mb-3">
-                                <label class="form-label">Student Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <label class="form-label">Teacher Name</label>
+                                <input type="text" class="form-control" id="teachername" name="teachername" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="teacheremail" name="teacheremail" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dob" name="dob" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address" name="address" required>
-                            </div>
+
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Save</button>
@@ -98,17 +89,14 @@
             </div>
         </div>
 
-        <!-- Student Table -->
+        <!-- teacher Table -->
         <div class="table-responsive">
             <table class="table table-bordered table-hover bg-white" id="datatable">
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
+                        <th>Teacher Name</th>
                         <th>Email</th>
-                        <th>Date Of Birth</th>
-                        <th>Phone</th>
-                        <th>Address</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -118,19 +106,19 @@
             </table>
         </div>
     </div>
-
     <script>
         $(document).ready(function () {
+            fetchTeachers();
             $.ajaxSetup({
                 headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
 
-            // Submit Form (Add or Update Student)
+            // Teacher Form (Add or Update Teacher)
             $('#SubmitForm').on('submit', function (e) {
                 e.preventDefault();
                 var id = $('#id').val();
                 var formData = new FormData(this);
-                var url = id ? `studentupdate/${id}` : "{{ route('studentstore') }}";
+                var url = id ? `teacherupdate/${id}` : "{{ route('teacherstore') }}";
 
                 $.ajax({
                     url: url,
@@ -142,7 +130,7 @@
                         $('#SubmitForm')[0].reset();
                         $('#exampleModal').modal('hide');
                         alert(response.success);
-                        fetchStudents();
+                        fetchTeachers();
                     },
                     error: function (e) {
                         console.log(e);
@@ -150,69 +138,66 @@
                 });
             });
 
-            // Fetch Student Records
-            function fetchStudents() {
+
+            // Fetch Teacher Records
+            function fetchTeachers() {
                 $.ajax({
-                    url: `studentget`,
+                    url: `teacherget`,
                     type: "GET",
                     success: function (response) {
                         var tbody = '';
-                        $.each(response, function (i, student) {
+                        $.each(response, function (i, teacher) {
                             tbody += `
                                 <tr>
-                                    <td>${student.id}</td>
-                                    <td>${student.name}</td>
-                                    <td>${student.email}</td>
-                                    <td>${student.dob}</td>
-                                    <td>${student.phone}</td>
-                                    <td>${student.address}</td>
+                                    <td>${teacher.id}</td>
+                                    <td>${teacher.teachername}</td>
+                                    <td>${teacher.teacheremail}</td>
+                                
                                     <td>
-                                        <button class="btn btn-success editBtn" data-id="${student.id}">Edit</button>
-                                        <button class="btn btn-danger deleteBtn" data-id="${student.id}">Delete</button>
+                                        <button class="btn btn-success editBtn" data-id="${teacher.id}">Edit</button>
+                                        <button class="btn btn-danger deleteBtn" data-id="${teacher.id}">Delete</button>
                                     </td>
                                 </tr>`;
                         });
                         $('#datatable tbody').html(tbody);
                     }
                 });
-            }
-            fetchStudents();
+                   
 
-            // Edit Student
+            }
+            fetchTeachers();  
+            // Edit Teacher
             $(document).on('click', '.editBtn', function () {
                 var id = $(this).data('id');
                 $.ajax({
-                    url: `studentedit/${id}`,
+                    url: `teacheredit/${id}`,
                     type: "GET",
                     success: function (response) {
                         $('#id').val(response.id);
-                        $('#name').val(response.name);
-                        $('#email').val(response.email);
-                        $('#dob').val(response.dob);
-                        $('#phone').val(response.phone);
-                        $('#address').val(response.address);
+                        $('#teachername').val(response.teachername);
+                        $('#teacheremail').val(response.teacheremail);
                         $('#exampleModal').modal('show');
                     }
                 });
             });
-
-            // Delete Student
-            $(document).on('click', '.deleteBtn', function () {
+              // Delete Teacher
+              $(document).on('click', '.deleteBtn', function () {
                 var id = $(this).data('id');
-                if (confirm('Are you sure you want to delete this student?')) {
+                if (confirm('Are you sure you want to delete this Teacher?')) {
                     $.ajax({
-                        url: `studentdelete/${id}`,
+                        url: `teacherdelete/${id}`,
                         type: "DELETE",
                         data: { "_token": "{{csrf_token()}}" },
                         success: function (response) {
                             alert(response.success);
-                            fetchStudents();
+                            fetchTeachers();
                         }
                     });
                 }
             });
+
         });
-    </script>
+            </script>
 
 </body>
 
